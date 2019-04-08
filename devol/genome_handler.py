@@ -86,7 +86,7 @@ class GenomeHandler:
             "num nodes": [2**i for i in range(4, int(math.log(max_dense_nodes, 2)) + 1)],
             "batch normalization": [0, (1 if batch_normalization else 0)],
             "activation": list(range(len(self.activation))),
-            "dropout": [(i if dropout else 0) for i in range(11)],
+            "dropout": [(i*2 if dropout else 0) for i in range(5)],
             "max pooling": list(range(3)) if max_pooling else 0,
         }
 
@@ -156,7 +156,7 @@ class GenomeHandler:
                 if genome[offset + 2]:
                     model.add(BatchNormalization())
                 model.add(Activation(self.activation[genome[offset + 3]]))
-                model.add(Dropout(float(genome[offset + 4] / 20.0)))
+                model.add(Dropout(float(genome[offset + 4] / 10.0)))
                 max_pooling_type = genome[offset + 5]
                 # must be large enough for a convolution
                 if max_pooling_type == 1 and dim >= 5:
@@ -181,7 +181,7 @@ class GenomeHandler:
                 if genome[offset + 2]:
                     model.add(BatchNormalization())
                 model.add(Activation(self.activation[genome[offset + 3]]))
-                model.add(Dropout(float(genome[offset + 4] / 20.0)))
+                model.add(Dropout(float(genome[offset + 4] / 10.0)))
             offset += self.dense_layer_size
         
         model.add(Dense(self.n_classes, activation='softmax'))

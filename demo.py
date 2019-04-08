@@ -3,7 +3,7 @@ from __future__ import print_function
 import tensorflow as tf
 from keras.backend.tensorflow_backend import set_session
 config = tf.ConfigProto()
-config.gpu_options.per_process_gpu_memory_fraction = 0.6
+config.gpu_options.per_process_gpu_memory_fraction = 0.4
 config.gpu_options.visible_device_list = "0"
 set_session(tf.Session(config=config))
 
@@ -70,10 +70,10 @@ dataset = ((data_train, class_train), (data_test, class_test))
 # models in a particular genetic program. See `genome-handler.py`
 # for more information.
 
-genome_handler = GenomeHandler(max_conv_layers=3, 
-                               max_dense_layers=3, # includes final dense layer
+genome_handler = GenomeHandler(max_conv_layers=0, 
+                               max_dense_layers=6, # includes final dense layer
                                max_filters=512,
-                               max_dense_nodes=512,
+                               max_dense_nodes=1024,
                                input_shape=data_train.shape[1:],
                                n_classes=71)
 
@@ -87,6 +87,6 @@ genome_handler = GenomeHandler(max_conv_layers=3,
 devol = DEvol(genome_handler)
 model = devol.run(dataset=dataset,
                   num_generations=20,
-                  pop_size=20,
+                  pop_size=30,
                   epochs=50)
 print(model.summary())

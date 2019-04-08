@@ -58,6 +58,8 @@ class calc_dist_test(Callback):
       score_results = self.model.predict(data_lt)
       points_test = loc_real
       points_result = np.dot(score_results, locs_pts)
+      #print(points_test)
+      #print(points_result)
       distance = np.sqrt((points_test[:,0]-points_result[:,0])**2 + (points_test[:,1]-points_result[:,1])**2 + (points_test[:,2]-points_result[:,2])**2);
       #sorted_dist = np.sort(distance);
       #print("25% Dist: ", get_cdf(25, sorted_dist));
@@ -96,7 +98,7 @@ max_val = -20;
 n_bins = 25;#
 num_classes = 71;
 
-filename_test = 'hists_test_050718_15aps_25bins_10rows_asus_clean.csv' #
+filename_test = 'hists_new_val_050718_15aps_25bins_10rows.txt' #
 data_final_test = np.genfromtxt(filename_test,delimiter=",");#
 data_lt = data_final_test[:,:-1];
 
@@ -225,7 +227,7 @@ class DEvol:
             set_session(tf.Session(config=config))
             #############################
 
-        return load_model('best-model.h5')
+        return load_model('best-model-cat.h5')
 
     def _reproduce(self, pop, gen):
         members = []
@@ -246,7 +248,7 @@ class DEvol:
         model = self.genome_handler.decode(genome)
         print(model.summary());
         loss, accuracy = None, None
-        cback_dist = calc_dist_test(patience=3, x_test = self.x_test, y_test = self.y_test);
+        cback_dist = calc_dist_test(patience=5, x_test = self.x_test, y_test = self.y_test);
         try:
             model.fit(self.x_train, self.y_train,
                       validation_data=(self.x_test, self.y_test),
@@ -286,11 +288,11 @@ class DEvol:
                 self._metric_op(met, self._bssf) and
                 accuracy is not 0):
             try:
-                os.remove('best-model.h5')
+                os.remove('best-model-cat.h5')
             except OSError:
                 pass
             self._bssf = met
-            model.save('best-model.h5')
+            model.save('best-model-cat.h5')
 
     def _handle_broken_model(self, model, error):
         del model
@@ -328,8 +330,8 @@ class DEvol:
         print(fstr.format(imod + 1, nmod, igen + 1, ngen))
 
     def _generate_random_population(self, size):
-        return self.genome_handler.generate2(size)
-        #return [self.genome_handler.generate() for _ in range(size)]
+        #return self.genome_handler.generate2(size)
+        return [self.genome_handler.generate() for _ in range(size)]
 
 
     def _print_result(self, fitness, generation):
